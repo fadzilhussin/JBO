@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Road to Doomsday — Watch Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Barlow+Condensed:wght@500;600&family=Barlow:wght@400;500;600&family=JetBrains+Mono:wght@600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --iron-0:#0a0d0c;      /* near-black */
+    --iron-1:#121715;
+    --iron-1b:#121715;
+    --iron-2:#1b2320;      /* panel */
+    --iron-3:#2b3a34;      /* raised */
+    --line:#33463e;
+    --emerald:#0e6b48;     /* Doom green */
+    --emerald-lo:#0a4a32;
+    --emerald-hi:#25a072;
+    --brass:#c8a24a;       /* engraved gold */
+    --brass-hi:#e7c877;
+    --parchment:#e8e4d8;
+    --muted:#8fa39a;
+    --danger:#b8322a;      /* Doomsday warning */
+    --danger-hi:#e0574c;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(1200px 700px at 50% -10%, rgba(14,107,72,.16), transparent 60%),
+      radial-gradient(900px 500px at 90% 10%, rgba(200,162,74,.06), transparent 55%),
+      var(--iron-0);
+    color:var(--parchment);
+    font-family:"Barlow",system-ui,sans-serif;
+    line-height:1.5;
+    min-height:100vh;
+    padding:0 18px 90px;
+  }
+  a{color:var(--brass-hi)}
+
+  /* ---------- header ---------- */
+  header{
+    max-width:820px;margin:0 auto;padding:46px 0 8px;text-align:center;
+  }
+  .eyebrow{
+    font-family:"Barlow Condensed",sans-serif;
+    letter-spacing:.42em;text-transform:uppercase;font-size:.72rem;
+    color:var(--brass);margin:0 0 14px;padding-left:.42em;
+  }
+  h1{
+    font-family:"Cinzel",serif;font-weight:900;
+    font-size:clamp(2.3rem,7vw,4.1rem);
+    line-height:.98;margin:0;letter-spacing:.02em;
+    color:var(--parchment);
+    text-shadow:0 2px 0 #000, 0 0 40px rgba(37,160,114,.25);
+  }
+  h1 .doom{
+    display:block;color:var(--emerald-hi);
+    text-shadow:0 2px 0 #000,0 0 34px rgba(37,160,114,.5);
+  }
+  .sub{
+    color:var(--muted);max-width:560px;margin:16px auto 0;font-size:.98rem;
+  }
+
+  /* ---------- doom clock ---------- */
+  .clock{
+    max-width:820px;margin:30px auto 0;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
+  }
+  .clock .cell{
+    background:linear-gradient(180deg,var(--iron-2),var(--iron-1b));
+    border:1px solid var(--line);border-radius:10px;padding:14px 6px;text-align:center;
+    position:relative;overflow:hidden;
+  }
+  .clock .cell::before{
+    content:"";position:absolute;inset:0;
+    background:radial-gradient(120px 40px at 50% -20%,rgba(37,160,114,.18),transparent 70%);
+  }
+  .clock .num{
+    font-family:"JetBrains Mono",monospace;font-weight:800;
+    font-size:clamp(1.5rem,5vw,2.3rem);color:var(--brass-hi);position:relative;
+  }
+  .clock .lbl{
+    font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;
+    letter-spacing:.2em;font-size:.62rem;color:var(--muted);margin-top:4px;position:relative;
+  }
+
+  /* ---------- meter ---------- */
+  .meter-wrap{max-width:820px;margin:26px auto 0;}
+  .meter-top{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;
+    letter-spacing:.16em;font-size:.74rem;color:var(--muted);margin-bottom:8px;
+  }
+  .meter-top b{color:var(--parchment);font-weight:600}
+  .meter{
+    height:16px;background:var(--iron-2);border:1px solid var(--line);
+    border-radius:20px;overflow:hidden;position:relative;
+  }
+  .meter .fill{
+    height:100%;width:0%;border-radius:20px;
+    background:linear-gradient(90deg,var(--emerald-lo),var(--emerald-hi));
+    box-shadow:0 0 18px rgba(37,160,114,.5) inset,0 0 12px rgba(37,160,114,.35);
+    transition:width .5s cubic-bezier(.22,1,.36,1);
+  }
+
+  /* ---------- controls ---------- */
+  .controls{
+    max-width:820px;margin:20px auto 0;display:flex;flex-wrap:wrap;gap:8px;
+    align-items:center;justify-content:center;
+  }
+  .btn{
+    font-family:"Barlow Condensed",sans-serif;font-weight:600;
+    text-transform:uppercase;letter-spacing:.12em;font-size:.78rem;
+    background:var(--iron-2);color:var(--parchment);
+    border:1px solid var(--line);border-radius:8px;padding:9px 15px;cursor:pointer;
+    transition:.18s;user-select:none;
+  }
+  .btn:hover{border-color:var(--emerald-hi);color:#fff}
+  .btn.active{background:var(--emerald-lo);border-color:var(--emerald-hi);color:#fff}
+  .btn.ghost:hover{border-color:var(--danger-hi);color:var(--danger-hi)}
+
+  /* ---------- phases ---------- */
+  main{max-width:820px;margin:0 auto}
+  .phase{margin-top:40px}
+  .phase-head{
+    display:flex;align-items:center;gap:14px;margin-bottom:14px;
+  }
+  .phase-idx{
+    font-family:"Cinzel",serif;font-weight:700;color:var(--emerald-hi);
+    font-size:1.05rem;flex:0 0 auto;
+    border:1px solid var(--line);border-radius:8px;padding:4px 10px;background:var(--iron-1b);
+  }
+  .phase-title{
+    font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;
+    letter-spacing:.22em;font-size:.92rem;color:var(--parchment);
+  }
+  .phase-title small{display:block;letter-spacing:.14em;color:var(--muted);font-size:.66rem;margin-top:2px}
+  .phase-line{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+
+  /* ---------- items ---------- */
+  .item{
+    display:flex;align-items:center;gap:14px;
+    background:linear-gradient(180deg,var(--iron-2),var(--iron-1b));
+    border:1px solid var(--line);border-radius:11px;
+    padding:13px 16px;margin-bottom:9px;cursor:pointer;
+    transition:.18s;position:relative;
+  }
+  .item:hover{border-color:var(--emerald);transform:translateX(3px)}
+  .box{
+    flex:0 0 auto;width:26px;height:26px;border-radius:6px;
+    border:2px solid var(--muted);display:grid;place-items:center;
+    transition:.18s;background:transparent;
+  }
+  .box svg{width:16px;height:16px;opacity:0;transform:scale(.4);transition:.2s}
+  .meta{flex:1;min-width:0}
+  .name{
+    font-weight:600;font-size:1.02rem;color:var(--parchment);
+    display:flex;align-items:center;gap:9px;flex-wrap:wrap;
+  }
+  .year{color:var(--muted);font-weight:500;font-size:.86rem}
+  .note{color:var(--muted);font-size:.82rem;margin-top:2px}
+  .tags{display:flex;gap:6px;flex:0 0 auto}
+  .tag{
+    font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;
+    letter-spacing:.1em;font-size:.62rem;font-weight:600;
+    padding:3px 8px;border-radius:20px;border:1px solid var(--line);color:var(--muted);
+    white-space:nowrap;
+  }
+  .tag.key{color:var(--brass-hi);border-color:var(--brass);background:rgba(200,162,74,.08)}
+  .tag.stream{color:var(--emerald-hi);border-color:var(--emerald)}
+
+  /* checked state */
+  .item.done{border-color:var(--emerald-lo);background:linear-gradient(180deg,rgba(14,107,72,.14),rgba(10,74,50,.06))}
+  .item.done .box{background:var(--emerald);border-color:var(--emerald-hi)}
+  .item.done .box svg{opacity:1;transform:scale(1)}
+  .item.done .name{color:var(--muted)}
+  .item.done .name .title-txt{text-decoration:line-through;text-decoration-color:var(--emerald-hi)}
+
+  /* ---------- doomsday seal ---------- */
+  .finale{
+    margin-top:48px;text-align:center;
+    border:1px solid var(--line);border-radius:16px;padding:34px 22px;
+    background:
+      radial-gradient(600px 200px at 50% 0%,rgba(184,50,42,.14),transparent 70%),
+      linear-gradient(180deg,var(--iron-2),var(--iron-0));
+    position:relative;overflow:hidden;transition:.6s;
+  }
+  .finale.sealed{filter:grayscale(.4) brightness(.72)}
+  .finale .seal-eyebrow{
+    font-family:"Barlow Condensed",sans-serif;text-transform:uppercase;
+    letter-spacing:.34em;font-size:.72rem;color:var(--danger-hi);margin-bottom:12px;
+  }
+  .finale h2{
+    font-family:"Cinzel",serif;font-weight:900;font-size:clamp(2rem,6vw,3rem);
+    margin:0;color:var(--parchment);letter-spacing:.02em;
+    text-shadow:0 0 40px rgba(184,50,42,.4);
+  }
+  .finale .date{
+    font-family:"JetBrains Mono",monospace;font-weight:800;color:var(--brass-hi);
+    margin-top:12px;font-size:1.15rem;letter-spacing:.06em;
+  }
+  .finale .status{
+    margin-top:16px;font-family:"Barlow Condensed",sans-serif;
+    text-transform:uppercase;letter-spacing:.18em;font-size:.82rem;color:var(--muted);
+  }
+  .finale.ready .status{color:var(--emerald-hi)}
+  .finale.ready{filter:none;border-color:var(--emerald)}
+  .finale.ready h2{text-shadow:0 0 44px rgba(37,160,114,.55)}
+
+  footer{max-width:820px;margin:34px auto 0;text-align:center;color:var(--muted);font-size:.78rem;line-height:1.7}
+
+  .hide{display:none !important}
+
+  @media (max-width:560px){
+    .clock{grid-template-columns:repeat(2,1fr)}
+    .item{padding:12px 13px;gap:11px}
+    .tags{flex-direction:column;align-items:flex-end}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <p class="eyebrow">Latverian Preparation Dossier</p>
+  <h1>The Road to<span class="doom">Doomsday</span></h1>
+  <p class="sub">Every essential stop on the path to <em>Avengers: Doomsday</em>. Mark each one as you watch — the final seal breaks only when the road is complete.</p>
+</header>
+
+<section class="clock" id="clock" aria-label="Countdown to Doomsday">
+  <div class="cell"><div class="num" id="c-days">—</div><div class="lbl">Days Left</div></div>
+  <div class="cell"><div class="num" id="c-weeks">—</div><div class="lbl">Weeks Left</div></div>
+  <div class="cell"><div class="num" id="c-watched">0</div><div class="lbl">Watched</div></div>
+  <div class="cell"><div class="num" id="c-left">0</div><div class="lbl">To Go</div></div>
+</section>
+
+<div class="meter-wrap">
+  <div class="meter-top"><span>Preparation</span><span id="pct"><b>0%</b> ready to face Doom</span></div>
+  <div class="meter"><div class="fill" id="fill"></div></div>
+</div>
+
+<div class="controls">
+  <button class="btn active" id="f-all" data-filter="all">All titles</button>
+  <button class="btn" id="f-key" data-filter="key">Essentials only</button>
+  <button class="btn" id="f-hide" data-toggle="hide">Hide watched</button>
+  <button class="btn ghost" id="reset">Reset progress</button>
+</div>
+
+<main id="list"></main>
+
+<section class="finale sealed" id="finale">
+  <p class="seal-eyebrow" id="finale-eyebrow">◆ Sealed until preparation is complete ◆</p>
+  <h2>Avengers: Doomsday</h2>
+  <div class="date">18 · 12 · 2026</div>
+  <div class="status" id="finale-status">Complete the road to break the seal</div>
+</section>
+
+<footer>
+  Watch order shown in release order. <span style="color:var(--brass-hi)">🔑 Essential</span> titles carry the threads that pay off directly in Doomsday.<br>
+  Your progress saves automatically in this browser. Built for the countdown to 18 December 2026.
+</footer>
+
+<script>
+/* ---------------- data ---------------- */
+const PHASES = [
+  { idx:"I", title:"The Infinity Saga", sub:"The foundation — heroes, stakes, and the first cracks in reality", items:[
+    { id:"iron-man",        name:"Iron Man", year:"2008" },
+    { id:"cap-first",       name:"Captain America: The First Avenger", year:"2011" },
+    { id:"avengers-1",      name:"The Avengers", year:"2012" },
+    { id:"age-of-ultron",   name:"Avengers: Age of Ultron", year:"2015", key:true, note:"Required setup for 2026's VisionQuest" },
+    { id:"black-panther",   name:"Black Panther", year:"2018", key:true, note:"Wakanda — central to Doomsday's alliance" },
+    { id:"infinity-war",    name:"Avengers: Infinity War", year:"2018", key:true },
+    { id:"endgame",         name:"Avengers: Endgame", year:"2019", key:true, note:"The emotional & multiversal baseline for all that follows" },
+    { id:"ffh",             name:"Spider-Man: Far From Home", year:"2019" },
+  ]},
+  { idx:"II", title:"The Multiverse Begins", sub:"Phase 4 — the TVA, variants, and incursions take shape", items:[
+    { id:"wandavision",     name:"WandaVision", year:"2021", stream:true, key:true, note:"Sets up VisionQuest" },
+    { id:"loki",            name:"Loki — Seasons 1 & 2", year:"2021–23", stream:true, key:true, note:"The multiverse rulebook. Arguably the most important prep." },
+    { id:"black-widow",     name:"Black Widow", year:"2021", note:"Introduces Yelena & Red Guardian (both in Doomsday)" },
+    { id:"shang-chi",       name:"Shang-Chi and the Legend of the Ten Rings", year:"2021", key:true },
+    { id:"eternals",        name:"Eternals", year:"2021" },
+    { id:"nwh",             name:"Spider-Man: No Way Home", year:"2021", key:true, note:"The multiverse cracks wide open" },
+    { id:"mom",             name:"Doctor Strange in the Multiverse of Madness", year:"2022", key:true, note:"Establishes incursions — the core threat of Doomsday" },
+    { id:"wakanda-forever", name:"Black Panther: Wakanda Forever", year:"2022", key:true, note:"Introduces Namor & Talokan" },
+  ]},
+  { idx:"III", title:"Assembling the Players", sub:"Phase 5 — the Doomsday roster comes together", items:[
+    { id:"quantumania",     name:"Ant-Man and the Wasp: Quantumania", year:"2023" },
+    { id:"gotg3",           name:"Guardians of the Galaxy Vol. 3", year:"2023" },
+    { id:"the-marvels",     name:"The Marvels", year:"2023", key:true, note:"Ends on a major X-Men / multiverse tease" },
+    { id:"deadpool-wolv",   name:"Deadpool & Wolverine", year:"2024", key:true, note:"The bridge to the Fox universe and the X-Men" },
+    { id:"brave-new-world", name:"Captain America: Brave New World", year:"2025" },
+    { id:"thunderbolts",    name:"Thunderbolts", year:"2025", key:true, note:"Becomes the New Avengers — central to Doomsday" },
+  ]},
+  { idx:"IV", title:"The Direct Lead-In", sub:"Phase 6 — the final stretch before the storm", items:[
+    { id:"ff-first-steps",  name:"The Fantastic Four: First Steps", year:"2025", key:true, note:"The First Family, front and center in Doomsday" },
+    { id:"visionquest",     name:"VisionQuest", year:"2026", stream:true, note:"Vision vs. Ultron, ~a year after WandaVision" },
+    { id:"brand-new-day",   name:"Spider-Man: Brand New Day", year:"2026", key:true, note:"The last stop — Hulk, the Punisher, and a consequential post-credits scene" },
+  ]},
+];
+
+const TARGET = new Date("2026-12-18T00:00:00");
+const STORE_KEY = "road-to-doomsday-v1";
+const ALL_IDS = PHASES.flatMap(p => p.items.map(i => i.id));
+
+/* ---------------- persistence (degrades gracefully) ---------------- */
+function load(){
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function save(state){
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch(e){}
+}
+let watched = load();
+
+/* ---------------- render ---------------- */
+const check = `<svg viewBox="0 0 24 24" fill="none" stroke="#eafff5" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+const listEl = document.getElementById("list");
+
+function render(){
+  listEl.innerHTML = "";
+  PHASES.forEach(phase => {
+    const sec = document.createElement("section");
+    sec.className = "phase";
+    sec.innerHTML = `
+      <div class="phase-head">
+        <span class="phase-idx">${phase.idx}</span>
+        <div class="phase-title">${phase.title}<small>${phase.sub}</small></div>
+        <span class="phase-line"></span>
+      </div>`;
+    phase.items.forEach(it => {
+      const done = !!watched[it.id];
+      const row = document.createElement("div");
+      row.className = "item" + (done ? " done" : "");
+      row.dataset.id = it.id;
+      row.dataset.key = it.key ? "1" : "0";
+      row.dataset.done = done ? "1" : "0";
+      row.innerHTML = `
+        <div class="box">${check}</div>
+        <div class="meta">
+          <div class="name"><span class="title-txt">${it.name}</span> <span class="year">${it.year}</span></div>
+          ${it.note ? `<div class="note">${it.note}</div>` : ``}
+        </div>
+        <div class="tags">
+          ${it.stream ? `<span class="tag stream">Series</span>` : ``}
+          ${it.key ? `<span class="tag key">🔑 Essential</span>` : ``}
+        </div>`;
+      row.addEventListener("click", () => toggle(it.id));
+      sec.appendChild(row);
+    });
+    listEl.appendChild(sec);
+  });
+  applyFilters();
+}
+
+function toggle(id){
+  watched[id] = !watched[id];
+  if(!watched[id]) delete watched[id];
+  save(watched);
+  const row = listEl.querySelector(`.item[data-id="${id}"]`);
+  const done = !!watched[id];
+  row.classList.toggle("done", done);
+  row.dataset.done = done ? "1" : "0";
+  updateStats();
+  applyFilters();
+}
+
+/* ---------------- stats + countdown ---------------- */
+function updateStats(){
+  const n = ALL_IDS.filter(id => watched[id]).length;
+  const total = ALL_IDS.length;
+  const pct = Math.round((n/total)*100);
+  document.getElementById("fill").style.width = pct + "%";
+  document.getElementById("pct").innerHTML = `<b>${pct}%</b> ready to face Doom`;
+  document.getElementById("c-watched").textContent = n;
+  document.getElementById("c-left").textContent = total - n;
+
+  const finale = document.getElementById("finale");
+  const eyebrow = document.getElementById("finale-eyebrow");
+  const status = document.getElementById("finale-status");
+  if(n === total){
+    finale.classList.remove("sealed");
+    finale.classList.add("ready");
+    eyebrow.textContent = "◆ The seal is broken ◆";
+    status.textContent = "The road is complete — you are ready.";
+  } else {
+    finale.classList.add("sealed");
+    finale.classList.remove("ready");
+    eyebrow.textContent = "◆ Sealed until preparation is complete ◆";
+    status.textContent = `${total - n} title${total-n===1?"":"s"} remain on the road`;
+  }
+}
+
+function updateClock(){
+  const now = new Date();
+  const ms = TARGET - now;
+  const days = Math.max(0, Math.ceil(ms / 86400000));
+  document.getElementById("c-days").textContent = days;
+  document.getElementById("c-weeks").textContent = Math.max(0, Math.floor(days/7));
+}
+
+/* ---------------- filters ---------------- */
+let filter = "all";   // all | key
+let hideWatched = false;
+
+function applyFilters(){
+  listEl.querySelectorAll(".item").forEach(row => {
+    const isKey  = row.dataset.key === "1";
+    const isDone = row.dataset.done === "1";
+    let show = true;
+    if(filter === "key" && !isKey) show = false;
+    if(hideWatched && isDone) show = false;
+    row.classList.toggle("hide", !show);
+  });
+  // hide empty phase headers
+  listEl.querySelectorAll(".phase").forEach(sec => {
+    const anyVisible = [...sec.querySelectorAll(".item")].some(r => !r.classList.contains("hide"));
+    sec.classList.toggle("hide", !anyVisible);
+  });
+}
+
+document.getElementById("f-all").addEventListener("click", e=>{
+  filter="all"; setActive(e.target,"f-all","f-key"); applyFilters();
+});
+document.getElementById("f-key").addEventListener("click", e=>{
+  filter="key"; setActive(e.target,"f-key","f-all"); applyFilters();
+});
+function setActive(el, onId, offId){
+  document.getElementById(onId).classList.add("active");
+  document.getElementById(offId).classList.remove("active");
+}
+document.getElementById("f-hide").addEventListener("click", e=>{
+  hideWatched = !hideWatched;
+  e.target.classList.toggle("active", hideWatched);
+  applyFilters();
+});
+document.getElementById("reset").addEventListener("click", ()=>{
+  if(confirm("Reset all progress? This clears every checkmark.")){
+    watched = {}; save(watched); render(); updateStats();
+  }
+});
+
+/* ---------------- init ---------------- */
+render();
+updateStats();
+updateClock();
+setInterval(updateClock, 60*60*1000);
+</script>
+</body>
+</html>
