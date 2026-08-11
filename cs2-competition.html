@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CS2 Competition · IT Department</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0a0c0f;
+    --panel:#12161c;
+    --panel-2:#171d25;
+    --line:#28303b;
+    --orange:#f5a623;
+    --orange-hi:#ffc457;
+    --blue:#4aa3ff;
+    --red:#ff3b30;
+    --green:#48e07a;
+    --text:#eceff3;
+    --muted:#8b96a5;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(900px 500px at 50% -10%, rgba(245,166,35,.10), transparent 62%),
+      linear-gradient(180deg,#0c0f13,var(--bg));
+    color:var(--text);
+    font-family:"Rajdhani",system-ui,sans-serif;
+    line-height:1.5;min-height:100vh;padding:0 18px 80px;
+    -webkit-font-smoothing:antialiased;
+  }
+  /* faint scanlines */
+  body::before{
+    content:"";position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.35;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,.015) 0 1px, transparent 1px 3px);
+  }
+  .mono{font-family:"Share Tech Mono",monospace}
+
+  /* ---------- hero ---------- */
+  .hero{
+    max-width:860px;margin:0 auto;padding:52px 8px 12px;text-align:center;position:relative;z-index:2;
+  }
+  .eyebrow{
+    font-family:"Share Tech Mono",monospace;font-size:.76rem;letter-spacing:.28em;
+    text-transform:uppercase;color:var(--orange);margin:0 0 18px;
+  }
+  .eyebrow .sep{color:var(--muted);margin:0 8px}
+  h1{
+    font-weight:700;font-size:clamp(2.6rem,9vw,5.4rem);line-height:.92;margin:0;
+    letter-spacing:.02em;text-transform:uppercase;
+    text-shadow:0 0 40px rgba(245,166,35,.28);
+  }
+  h1 .two{
+    color:var(--orange);
+    -webkit-text-stroke:1px rgba(245,166,35,.5);
+  }
+  .tagline{
+    font-family:"Share Tech Mono",monospace;color:var(--muted);
+    letter-spacing:.16em;text-transform:uppercase;font-size:.8rem;margin-top:16px;
+  }
+
+  /* ---------- bomb countdown ---------- */
+  .bomb{
+    max-width:640px;margin:34px auto 0;position:relative;z-index:2;
+    background:linear-gradient(180deg,#15100c,#0d0a08);
+    border:1px solid #3a2a12;border-radius:14px;padding:22px 20px 24px;
+    box-shadow:0 0 0 1px rgba(255,59,48,.06), 0 20px 50px -25px rgba(255,59,48,.35);
+    overflow:hidden;
+  }
+  .bomb::before{
+    content:"";position:absolute;top:0;left:0;right:0;height:3px;
+    background:var(--red);opacity:.7;animation:strip 1s steps(2) infinite;
+  }
+  @keyframes strip{50%{opacity:.2}}
+  .bomb .cap{
+    font-family:"Share Tech Mono",monospace;font-size:.72rem;letter-spacing:.24em;
+    text-transform:uppercase;color:var(--red);text-align:center;margin-bottom:14px;
+  }
+  .timer{
+    display:flex;justify-content:center;align-items:flex-start;gap:6px;
+    font-family:"Share Tech Mono",monospace;
+  }
+  .timer .unit{min-width:70px;text-align:center}
+  .timer .val{
+    font-size:clamp(2.2rem,9vw,3.4rem);line-height:1;color:#ff5b52;
+    text-shadow:0 0 14px rgba(255,59,48,.65);
+  }
+  .timer .lbl{
+    font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:8px;
+  }
+  .timer .colon{
+    font-size:clamp(2rem,8vw,3rem);color:#ff5b52;line-height:1;padding-top:2px;
+    animation:blink 1s steps(2) infinite;
+  }
+  @keyframes blink{50%{opacity:.25}}
+  .bomb.live .cap{color:var(--green)}
+  .bomb.live::before{background:var(--green)}
+  .bomb.live .timer{display:none}
+  .go{display:none;text-align:center;font-size:clamp(1.8rem,7vw,2.6rem);
+    color:var(--green);text-shadow:0 0 20px rgba(72,224,122,.6);letter-spacing:.1em}
+  .bomb.live .go{display:block}
+
+  /* ---------- briefing grid ---------- */
+  .briefing{max-width:860px;margin:40px auto 0;position:relative;z-index:2}
+  .sec-label{
+    font-family:"Share Tech Mono",monospace;font-size:.74rem;letter-spacing:.22em;
+    text-transform:uppercase;color:var(--muted);
+    display:flex;align-items:center;gap:12px;margin-bottom:16px;
+  }
+  .sec-label::before{content:"//";color:var(--orange)}
+  .sec-label .line{flex:1;height:1px;background:linear-gradient(90deg,var(--line),transparent)}
+  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  .intel{
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);border-radius:12px;padding:18px 18px;position:relative;
+  }
+  .intel::after{
+    content:"";position:absolute;top:10px;right:10px;width:12px;height:12px;
+    border-top:2px solid var(--line);border-right:2px solid var(--line);
+  }
+  .intel .k{
+    font-family:"Share Tech Mono",monospace;font-size:.66rem;letter-spacing:.18em;
+    text-transform:uppercase;color:var(--orange);margin-bottom:8px;
+  }
+  .intel .v{font-size:1.5rem;font-weight:700;line-height:1.15}
+  .intel .v small{display:block;font-weight:500;font-size:.95rem;color:var(--muted);margin-top:2px}
+  .intel.wide{grid-column:1 / -1}
+  .intel .classified{color:var(--blue)}
+
+  /* ---------- orders ---------- */
+  .orders{
+    max-width:860px;margin:34px auto 0;position:relative;z-index:2;
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);border-left:3px solid var(--orange);
+    border-radius:12px;padding:22px 22px;
+  }
+  .orders h3{
+    font-family:"Share Tech Mono",monospace;font-size:.78rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--orange);margin:0 0 14px;
+  }
+  .orders ul{margin:0;padding:0;list-style:none}
+  .orders li{
+    display:flex;gap:12px;align-items:flex-start;font-size:1.06rem;margin:9px 0;color:#dfe4ea;
+  }
+  .orders li::before{content:"▸";color:var(--orange);flex:0 0 auto}
+
+  /* ---------- signoff ---------- */
+  .signoff{
+    max-width:860px;margin:34px auto 0;text-align:center;position:relative;z-index:2;
+    border-top:1px solid var(--line);padding-top:26px;
+  }
+  .signoff .role{
+    font-family:"Share Tech Mono",monospace;font-size:.72rem;letter-spacing:.2em;
+    text-transform:uppercase;color:var(--muted);margin-bottom:6px;
+  }
+  .signoff .name{font-size:1.6rem;font-weight:700;letter-spacing:.02em}
+  .signoff .org{color:var(--muted);letter-spacing:.14em;text-transform:uppercase;font-size:.82rem;margin-top:4px}
+
+  .back{
+    display:inline-block;margin-top:26px;font-family:"Share Tech Mono",monospace;
+    font-size:.78rem;letter-spacing:.12em;color:var(--muted);text-decoration:none;
+    border:1px solid var(--line);border-radius:8px;padding:8px 15px;transition:.16s;
+  }
+  .back:hover{color:var(--orange);border-color:var(--orange)}
+
+  @media(max-width:560px){
+    .grid{grid-template-columns:1fr}
+    .timer .unit{min-width:54px}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <p class="eyebrow">IT Department <span class="sep">//</span> Tactical Operation <span class="sep">//</span> 2026</p>
+  <h1>Counter-Strike <span class="two">2</span></h1>
+  <div class="tagline">Lock in · Load up · Represent the department</div>
+</header>
+
+<section class="bomb" id="bomb" aria-label="Countdown to kickoff">
+  <div class="cap" id="bombCap">◤ Time to kickoff ◢</div>
+  <div class="timer" id="timer">
+    <div class="unit"><div class="val" id="d">--</div><div class="lbl">Days</div></div>
+    <div class="colon">:</div>
+    <div class="unit"><div class="val" id="h">--</div><div class="lbl">Hrs</div></div>
+    <div class="colon">:</div>
+    <div class="unit"><div class="val" id="m">--</div><div class="lbl">Min</div></div>
+    <div class="colon">:</div>
+    <div class="unit"><div class="val" id="s">--</div><div class="lbl">Sec</div></div>
+  </div>
+  <div class="go">◤ MATCH IS LIVE — GO GO GO ◢</div>
+</section>
+
+<section class="briefing">
+  <div class="sec-label">Mission Briefing <span class="line"></span></div>
+  <div class="grid">
+    <div class="intel">
+      <div class="k">Date</div>
+      <div class="v">17 August 2026<small>Monday</small></div>
+    </div>
+    <div class="intel">
+      <div class="k">Time</div>
+      <div class="v">1800 HRS<small>6:00 PM</small></div>
+    </div>
+    <div class="intel wide">
+      <div class="k">Lobby / Room</div>
+      <div class="v classified">Private room — to be announced</div>
+      <div class="v" style="font-size:.95rem;font-weight:500;color:var(--muted);margin-top:6px">
+        A private room will be created in the game lobby. Room details will be announced closer to the date — stand by for the drop.
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="orders">
+  <h3>Standing Orders</h3>
+  <ul>
+    <li>Have Counter-Strike 2 installed and updated before the 17th.</li>
+    <li>Be online and ready in the lobby by <strong>1745 HRS</strong> — 15 minutes early.</li>
+    <li>Watch for the private room announcement — it will be shared before kickoff.</li>
+    <li>Bring your A-game. Good comms, good vibes, no throwing.</li>
+  </ul>
+</section>
+
+<section class="signoff">
+  <div class="role">Organized by</div>
+  <div class="name">Shaifudin</div>
+  <div class="org">ONESEA IT Lead · IT Department</div>
+  <!-- link back to the Workshop wall -->
+  <a class="back" href="index.html">← Back to the Workshop</a>
+</section>
+
+<script>
+  // Event: 17 Aug 2026, 18:00 (Malaysia / UTC+8). Adjust the offset if needed.
+  const TARGET = new Date("2026-08-17T18:00:00+08:00");
+  const bomb = document.getElementById("bomb");
+  const cap  = document.getElementById("bombCap");
+  const pad  = n => String(n).padStart(2,"0");
+
+  function tick(){
+    const diff = TARGET - new Date();
+    if(diff <= 0){ bomb.classList.add("live"); cap.textContent = "◤ Deployed ◢"; return; }
+    const d = Math.floor(diff/86400000);
+    const h = Math.floor(diff%86400000/3600000);
+    const m = Math.floor(diff%3600000/60000);
+    const s = Math.floor(diff%60000/1000);
+    document.getElementById("d").textContent = pad(d);
+    document.getElementById("h").textContent = pad(h);
+    document.getElementById("m").textContent = pad(m);
+    document.getElementById("s").textContent = pad(s);
+  }
+  tick(); setInterval(tick, 1000);
+</script>
+</body>
+</html>
