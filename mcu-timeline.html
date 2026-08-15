@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Sacred Timeline — MCU Chronological Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Special+Elite&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#191410;
+    --panel:#221a13;
+    --panel-2:#2a2018;
+    --line:#3d2f22;
+    --tva:#f26b1d;        /* TVA orange */
+    --tva-hi:#ff8a3d;
+    --amber:#e0a83e;      /* mustard */
+    --cream:#f3ead6;
+    --muted:#a98f74;
+    --dim:#7c6650;
+    --secure:#f26b1d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:
+      radial-gradient(900px 480px at 50% -12%, rgba(242,107,29,.14), transparent 60%),
+      var(--bg);
+    color:var(--cream);
+    font-family:"Inter",system-ui,sans-serif;line-height:1.5;
+    min-height:100vh;padding:0 18px 90px;
+  }
+
+  /* ---------- header ---------- */
+  header{max-width:780px;margin:0 auto;padding:48px 0 6px;text-align:center}
+  .stamp{
+    display:inline-block;font-family:"Special Elite",monospace;
+    font-size:.72rem;letter-spacing:.22em;text-transform:uppercase;color:var(--tva-hi);
+    border:1.5px solid var(--tva);border-radius:4px;padding:6px 14px;margin-bottom:20px;
+    transform:rotate(-1.2deg);box-shadow:2px 2px 0 rgba(242,107,29,.25);
+  }
+  h1{
+    font-family:"Oswald",sans-serif;font-weight:700;text-transform:uppercase;
+    font-size:clamp(2.3rem,7vw,3.9rem);line-height:.98;margin:0;letter-spacing:.04em;
+    color:var(--cream);text-shadow:0 2px 0 #000;
+  }
+  h1 .o{color:var(--tva)}
+  .sub{
+    font-family:"Special Elite",monospace;color:var(--muted);
+    max-width:520px;margin:16px auto 0;font-size:.92rem;
+  }
+
+  /* ---------- stats + meter ---------- */
+  .dash{max-width:780px;margin:28px auto 0}
+  .nums{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+  .stat{
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);border-radius:9px;padding:13px 8px;text-align:center;
+  }
+  .stat .n{font-family:"Oswald",sans-serif;font-weight:700;font-size:1.7rem;color:var(--tva-hi)}
+  .stat .l{font-family:"Special Elite",monospace;font-size:.6rem;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--muted);margin-top:2px}
+  .meter-top{
+    display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"Special Elite",monospace;text-transform:uppercase;
+    letter-spacing:.1em;font-size:.72rem;color:var(--muted);margin-bottom:7px;
+  }
+  .meter-top b{color:var(--cream)}
+  .meter{height:14px;background:var(--panel);border:1px solid var(--line);
+    border-radius:20px;overflow:hidden}
+  .fill{height:100%;width:0%;border-radius:20px;
+    background:repeating-linear-gradient(45deg,var(--tva) 0 10px,var(--tva-hi) 10px 20px);
+    box-shadow:0 0 14px rgba(242,107,29,.5);transition:width .5s cubic-bezier(.22,1,.36,1)}
+
+  /* ---------- controls ---------- */
+  .controls{max-width:780px;margin:18px auto 0;display:flex;flex-wrap:wrap;gap:7px;justify-content:center}
+  .btn{
+    font-family:"Special Elite",monospace;font-size:.74rem;letter-spacing:.06em;
+    background:var(--panel);color:var(--cream);border:1px solid var(--line);
+    border-radius:6px;padding:8px 13px;cursor:pointer;transition:.16s;
+  }
+  .btn:hover{border-color:var(--tva);color:#fff}
+  .btn.active{background:var(--tva);border-color:var(--tva-hi);color:#1a1109}
+  .btn.ghost:hover{border-color:var(--amber);color:var(--amber)}
+
+  /* ---------- timeline ---------- */
+  main{max-width:780px;margin:26px auto 0;position:relative}
+  .timeline{position:relative;padding-left:34px}
+  .timeline::before{
+    content:"";position:absolute;left:11px;top:6px;bottom:6px;width:2px;
+    background:linear-gradient(180deg,var(--tva),var(--amber),var(--dim));opacity:.5;
+  }
+  .node{
+    position:relative;display:flex;align-items:center;gap:13px;
+    background:linear-gradient(180deg,var(--panel-2),var(--panel));
+    border:1px solid var(--line);border-radius:10px;padding:11px 15px;margin-bottom:8px;
+    cursor:pointer;transition:.16s;
+  }
+  .node:hover{border-color:var(--tva);transform:translateX(3px)}
+  .node .marker{
+    position:absolute;left:-28px;width:16px;height:16px;border-radius:50%;
+    background:var(--bg);border:2px solid var(--dim);transition:.18s;
+  }
+  .node .num{
+    font-family:"Special Elite",monospace;font-size:.78rem;color:var(--muted);
+    flex:0 0 auto;min-width:26px;
+  }
+  .node .box{
+    flex:0 0 auto;width:22px;height:22px;border-radius:5px;border:2px solid var(--dim);
+    display:grid;place-items:center;transition:.18s;
+  }
+  .node .box svg{width:13px;height:13px;opacity:0;transform:scale(.4);transition:.18s}
+  .node .title{flex:1;font-weight:500;font-size:1rem;color:var(--cream);min-width:0}
+  .node .type{
+    font-family:"Special Elite",monospace;font-size:.58rem;letter-spacing:.1em;
+    text-transform:uppercase;padding:3px 8px;border-radius:20px;border:1px solid var(--line);
+    color:var(--muted);flex:0 0 auto;white-space:nowrap;
+  }
+  .node .type.film{color:var(--tva-hi);border-color:var(--tva)}
+  .node .type.series{color:var(--amber);border-color:var(--amber)}
+  .node .type.special{color:#b0c4b1;border-color:#4a5c4b}
+
+  /* watched / secured */
+  .node.done{border-color:rgba(242,107,29,.4);background:linear-gradient(180deg,rgba(242,107,29,.10),rgba(242,107,29,.03))}
+  .node.done .marker{background:var(--tva);border-color:var(--tva-hi);box-shadow:0 0 10px rgba(242,107,29,.7)}
+  .node.done .box{background:var(--tva);border-color:var(--tva-hi)}
+  .node.done .box svg{opacity:1;transform:scale(1)}
+  .node.done .title{color:var(--muted);text-decoration:line-through;text-decoration-color:var(--tva)}
+
+  /* ---------- complete banner ---------- */
+  .done-banner{
+    max-width:780px;margin:26px auto 0;text-align:center;display:none;
+    border:1.5px solid var(--tva);border-radius:12px;padding:22px;
+    background:radial-gradient(500px 160px at 50% 0%,rgba(242,107,29,.16),transparent 70%),var(--panel);
+  }
+  .done-banner.show{display:block}
+  .done-banner .t{font-family:"Oswald",sans-serif;font-weight:700;text-transform:uppercase;
+    letter-spacing:.05em;font-size:1.5rem;color:var(--tva-hi)}
+  .done-banner .d{font-family:"Special Elite",monospace;color:var(--muted);margin-top:6px;font-size:.85rem}
+
+  footer{max-width:780px;margin:30px auto 0;text-align:center;color:var(--dim);
+    font-family:"Special Elite",monospace;font-size:.74rem;line-height:1.7}
+
+  .back{color:var(--muted);text-decoration:none;border-bottom:1px dotted var(--dim)}
+  .back:hover{color:var(--tva-hi)}
+  .hide{display:none !important}
+
+  @media(max-width:560px){
+    .node .type{display:none}
+    .nums{grid-template-columns:repeat(3,1fr)}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="stamp">Temporal Variance Authority · Case File</span>
+  <h1>The Sacred <span class="o">Timeline</span></h1>
+  <p class="sub">The entire Marvel Cinematic Universe, in chronological order. Prune each entry as you watch it and keep the timeline flowing.</p>
+</header>
+
+<section class="dash">
+  <div class="nums">
+    <div class="stat"><div class="n" id="s-done">0</div><div class="l">Pruned</div></div>
+    <div class="stat"><div class="n" id="s-left">0</div><div class="l">Remaining</div></div>
+    <div class="stat"><div class="n" id="s-total">0</div><div class="l">Entries</div></div>
+  </div>
+  <div class="meter-top"><span>Timeline secured</span><span id="pct"><b>0%</b></span></div>
+  <div class="meter"><div class="fill" id="fill"></div></div>
+</section>
+
+<div class="controls">
+  <button class="btn active" data-filter="all">All</button>
+  <button class="btn" data-filter="film">Films</button>
+  <button class="btn" data-filter="series">Series</button>
+  <button class="btn" data-filter="special">Specials</button>
+  <button class="btn ghost" id="hideBtn">Hide pruned</button>
+  <button class="btn ghost" id="reset">Reset</button>
+</div>
+
+<main><div class="timeline" id="timeline"></div></main>
+
+<section class="done-banner" id="banner">
+  <div class="t">◆ The Sacred Timeline is secure ◆</div>
+  <div class="d">Every entry pruned. He Who Remains would be proud.</div>
+</section>
+
+<footer>
+  Chronological order per the MCU timeline · <a class="back" href="index.html">← Back to the Workshop</a><br>
+  Progress saves automatically in this browser.
+</footer>
+
+<script>
+const DATA = [
+  ["01","Eyes of Wakanda","series"],
+  ["02","Captain America: The First Avenger","film"],
+  ["03","Agent Carter","series"],
+  ["04","Captain Marvel","film"],
+  ["05","Iron Man","film"],
+  ["06","Iron Man 2","film"],
+  ["07","The Incredible Hulk","film"],
+  ["08","A Funny Thing Happened on the Way to Thor's Hammer","special"],
+  ["09","Thor","film"],
+  ["10","The Consultant","special"],
+  ["11","The Avengers","film"],
+  ["12","Item 47","special"],
+  ["13","Thor: The Dark World","film"],
+  ["14","Iron Man 3","film"],
+  ["15","All Hail the King","special"],
+  ["16","Captain America: The Winter Soldier","film"],
+  ["17","Guardians of the Galaxy","film"],
+  ["18","Guardians of the Galaxy Vol. 2","film"],
+  ["19","I Am Groot season 1","series"],
+  ["20","I Am Groot season 2","series"],
+  ["21","Daredevil season 1","series"],
+  ["22","Jessica Jones season 1","series"],
+  ["23","Avengers: Age of Ultron","film"],
+  ["24","Ant-Man","film"],
+  ["25","Daredevil season 2","series"],
+  ["26","Luke Cage season 1","series"],
+  ["27","Iron Fist season 1","series"],
+  ["28","The Defenders","series"],
+  ["29","Captain America: Civil War","film"],
+  ["30","Black Widow","film"],
+  ["31","Black Panther","film"],
+  ["32","Spider-Man: Homecoming","film"],
+  ["33","The Punisher season 1","series"],
+  ["34","Doctor Strange","film"],
+  ["35","Jessica Jones season 2","series"],
+  ["36","Luke Cage season 2","series"],
+  ["37","Iron Fist season 2","series"],
+  ["38","Daredevil season 3","series"],
+  ["39","Thor: Ragnarok","film"],
+  ["40","The Punisher season 2","series"],
+  ["41","Jessica Jones season 3","series"],
+  ["42","Ant-Man and the Wasp","film"],
+  ["43","Avengers: Infinity War","film"],
+  ["44","Avengers: Endgame","film"],
+  ["45","Loki season 1","series"],
+  ["46","What If...? season 1","series"],
+  ["47","Marvel Zombies","series"],
+  ["48","WandaVision","series"],
+  ["49","Shang-Chi and the Legend of the Ten Rings","film"],
+  ["50","The Falcon and the Winter Soldier","series"],
+  ["51","Spider-Man: Far From Home","film"],
+  ["52","Eternals","film"],
+  ["53","Spider-Man: No Way Home","film"],
+  ["54","Doctor Strange in the Multiverse of Madness","film"],
+  ["55","Hawkeye","series"],
+  ["56","Moon Knight","series"],
+  ["57","Black Panther: Wakanda Forever","film"],
+  ["58","Echo","series"],
+  ["59","She-Hulk: Attorney at Law","series"],
+  ["60","Ms. Marvel","series"],
+  ["61","Thor: Love and Thunder","film"],
+  ["62","Ironheart","series"],
+  ["63","Werewolf by Night","special"],
+  ["64","The Guardians of the Galaxy Holiday Special","special"],
+  ["65","Ant-Man and the Wasp: Quantumania","film"],
+  ["66","Guardians of the Galaxy Vol. 3","film"],
+  ["67","Secret Invasion","series"],
+  ["68","The Marvels","film"],
+  ["69","Loki season 2","series"],
+  ["70","What If...? season 2","series"],
+  ["71","Deadpool & Wolverine","film"],
+  ["72","Agatha All Along","series"],
+  ["73","What If...? season 3","series"],
+  ["74","Daredevil: Born Again season 1","series"],
+  ["75","Captain America: Brave New World","film"],
+  ["76","Thunderbolts*","film"],
+  ["77","The Fantastic Four: First Steps","film"],
+  ["78","Wonder Man","series"],
+  ["79","Daredevil: Born Again season 2","series"],
+  ["80","The Punisher: One Last Kill","special"],
+  ["81","Spider-Man: Brand New Day","film"],
+];
+
+const KEY = "mcu-sacred-timeline-v1";
+const check = `<svg viewBox="0 0 24 24" fill="none" stroke="#1a1109" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>`;
+let watched = {};
+try { watched = JSON.parse(localStorage.getItem(KEY)) || {}; } catch(e){}
+function persist(){ try{ localStorage.setItem(KEY, JSON.stringify(watched)); }catch(e){} }
+
+const tl = document.getElementById("timeline");
+function render(){
+  tl.innerHTML = "";
+  DATA.forEach(([n,title,type])=>{
+    const done = !!watched[n];
+    const row = document.createElement("div");
+    row.className = "node" + (done ? " done":"");
+    row.dataset.type = type; row.dataset.done = done ? "1":"0"; row.dataset.n = n;
+    row.innerHTML = `
+      <span class="marker"></span>
+      <span class="num">${n}</span>
+      <span class="box">${check}</span>
+      <span class="title">${title}</span>
+      <span class="type ${type}">${type}</span>`;
+    row.addEventListener("click", ()=>toggle(n));
+    tl.appendChild(row);
+  });
+  applyFilters(); updateStats();
+}
+function toggle(n){
+  if(watched[n]) delete watched[n]; else watched[n]=1;
+  persist();
+  const row = tl.querySelector(`.node[data-n="${n}"]`);
+  const done = !!watched[n];
+  row.classList.toggle("done",done); row.dataset.done = done?"1":"0";
+  updateStats(); applyFilters();
+}
+function updateStats(){
+  const total = DATA.length;
+  const done = DATA.filter(d=>watched[d[0]]).length;
+  const pct = Math.round(done/total*100);
+  document.getElementById("s-done").textContent = done;
+  document.getElementById("s-left").textContent = total-done;
+  document.getElementById("s-total").textContent = total;
+  document.getElementById("fill").style.width = pct+"%";
+  document.getElementById("pct").innerHTML = `<b>${pct}%</b>`;
+  document.getElementById("banner").classList.toggle("show", done===total);
+}
+
+/* filters */
+let filter="all", hidePruned=false;
+function applyFilters(){
+  tl.querySelectorAll(".node").forEach(r=>{
+    let show=true;
+    if(filter!=="all" && r.dataset.type!==filter) show=false;
+    if(hidePruned && r.dataset.done==="1") show=false;
+    r.classList.toggle("hide",!show);
+  });
+}
+document.querySelectorAll(".btn[data-filter]").forEach(b=>{
+  b.addEventListener("click",()=>{
+    document.querySelectorAll(".btn[data-filter]").forEach(x=>x.classList.remove("active"));
+    b.classList.add("active"); filter=b.dataset.filter; applyFilters();
+  });
+});
+document.getElementById("hideBtn").addEventListener("click",e=>{
+  hidePruned=!hidePruned; e.target.classList.toggle("active",hidePruned); applyFilters();
+});
+document.getElementById("reset").addEventListener("click",()=>{
+  if(confirm("Reset the whole timeline? This clears every mark.")){
+    watched={}; persist(); render();
+  }
+});
+
+render();
+</script>
+</body>
+</html>
