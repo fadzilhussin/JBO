@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Honda Civic — A Complete History</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --bg-alt: #161922;
+    --card: #1b1f2a;
+    --card-border: #2a2f3d;
+    --text: #e8eaf0;
+    --text-dim: #9aa1b2;
+    --accent: #e0393f;   /* Honda-esque red */
+    --accent-dim: #8a2226;
+    --line: #2a2f3d;
+    --chip-bg: #23283580;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+
+  header.hero {
+    padding: 90px 24px 70px;
+    text-align: center;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(224,57,63,0.18), transparent 60%),
+      linear-gradient(180deg, var(--bg-alt), var(--bg));
+    border-bottom: 1px solid var(--line);
+  }
+  header.hero .eyebrow {
+    text-transform: uppercase;
+    letter-spacing: 0.25em;
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  header.hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    margin: 14px 0 10px;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+  }
+  header.hero p.sub {
+    color: var(--text-dim);
+    max-width: 640px;
+    margin: 0 auto;
+    font-size: 1.05rem;
+  }
+  header.hero .stat-row {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 46px;
+  }
+  header.hero .stat {
+    min-width: 120px;
+  }
+  header.hero .stat strong {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--text);
+  }
+  header.hero .stat span {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-dim);
+  }
+
+  main {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 60px 24px 100px;
+  }
+
+  section.intro {
+    max-width: 760px;
+    margin: 0 auto 70px;
+    text-align: center;
+    color: var(--text-dim);
+  }
+  section.intro p { margin: 0 0 14px; }
+
+  h2.section-title {
+    font-size: 1.6rem;
+    font-weight: 800;
+    margin: 0 0 8px;
+    letter-spacing: -0.01em;
+  }
+  p.section-desc {
+    color: var(--text-dim);
+    margin: 0 0 40px;
+    max-width: 640px;
+  }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    margin-top: 20px;
+  }
+  .timeline::before {
+    content: "";
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(180deg, var(--accent), var(--card-border) 90%);
+  }
+  @media (min-width: 720px) {
+    .timeline::before { left: 50%; transform: translateX(-1px); }
+  }
+
+  .gen {
+    position: relative;
+    padding-left: 56px;
+    margin-bottom: 46px;
+  }
+  @media (min-width: 720px) {
+    .gen { padding-left: 0; width: 50%; }
+    .gen:nth-child(odd) { padding-right: 44px; text-align: right; }
+    .gen:nth-child(even) { padding-left: 44px; margin-left: 50%; }
+  }
+
+  .gen .dot {
+    position: absolute;
+    left: 12px;
+    top: 6px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 3px solid var(--accent);
+    z-index: 2;
+  }
+  @media (min-width: 720px) {
+    .gen:nth-child(odd) .dot { left: auto; right: -9px; }
+    .gen:nth-child(even) .dot { left: -9px; }
+  }
+
+  .gen-card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 20px 22px;
+    transition: border-color 0.2s ease, transform 0.2s ease;
+  }
+  .gen-card:hover {
+    border-color: var(--accent-dim);
+    transform: translateY(-2px);
+  }
+  .gen-num {
+    display: inline-block;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--accent);
+    background: rgba(224,57,63,0.12);
+    padding: 3px 10px;
+    border-radius: 999px;
+    margin-bottom: 10px;
+  }
+  .gen-card h3 {
+    margin: 0 0 4px;
+    font-size: 1.15rem;
+    font-weight: 800;
+  }
+  .gen-card .years {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+    margin-bottom: 10px;
+    font-variant-numeric: tabular-nums;
+  }
+  .gen-card p {
+    margin: 0 0 10px;
+    color: #c7cbd8;
+    font-size: 0.94rem;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  @media (min-width: 720px) {
+    .gen:nth-child(odd) .chips { justify-content: flex-end; }
+  }
+  .chip {
+    font-size: 0.72rem;
+    background: var(--chip-bg);
+    border: 1px solid var(--card-border);
+    color: var(--text-dim);
+    padding: 3px 9px;
+    border-radius: 999px;
+  }
+
+  /* Tech / milestones grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 10px;
+  }
+  .grid .card {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 18px 20px;
+  }
+  .grid .card h4 {
+    margin: 0 0 8px;
+    font-size: 0.95rem;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .grid .card p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+  }
+
+  section.awards ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+  }
+  section.awards li {
+    background: var(--card);
+    border: 1px solid var(--card-border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 12px 16px;
+    font-size: 0.92rem;
+    color: #c7cbd8;
+  }
+  section.awards li strong { color: var(--text); }
+
+  footer {
+    text-align: center;
+    padding: 40px 24px 60px;
+    color: var(--text-dim);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--line);
+  }
+  footer a { color: var(--text-dim); }
+
+  section { margin-bottom: 70px; }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="eyebrow">Since 1972</div>
+  <h1>The Honda Civic</h1>
+  <p class="sub">From a fuel-crisis-era economy hatchback to a global best-seller — eleven generations, 50+ years, and one of the most influential compact cars ever built.</p>
+  <div class="stat-row">
+    <div class="stat"><strong>11</strong><span>Generations</span></div>
+    <div class="stat"><strong>1972</strong><span>Debut Year</span></div>
+    <div class="stat"><strong>27M+</strong><span>Units Sold</span></div>
+    <div class="stat"><strong>170+</strong><span>Countries Sold</span></div>
+  </div>
+</header>
+
+<main>
+
+  <section class="intro">
+    <p>The Honda Civic debuted in July 1972 as a compact, front-wheel-drive economy car — arriving right as the 1973 oil crisis made fuel efficiency a global priority. What began as a humble two-door fastback grew into one of the best-selling nameplates in automotive history, spanning eleven generations, multiple body styles, and technology that ranged from the emissions-beating CVCC engine to VTEC, hybrid powertrains, and the cult-favorite Type R.</p>
+  </section>
+
+  <section id="timeline">
+    <h2 class="section-title">Generation by Generation</h2>
+    <p class="section-desc">Each redesign reflects the era it was born into — from the oil-crisis efficiency of the 1970s to today's hybrid and turbocharged lineup.</p>
+
+    <div class="timeline">
+
+      <div class="gen">
+        <div class="dot"></div>
+        <div class="gen-card">
+          <span class="gen-num">1st Generation</span>
+          <h3>The Original Civic</h3>
+          <div class="years">1972 – 1979</div>
+          <p>Launched July 1972 as a two-door fastback sedan, soon joined by a three-door hatchback. Powered by a 1,169cc transverse engine with front-wheel drive. In December 1973, Honda introduced the CVCC engine, which met U.S. EPA emissions standards without a catalytic converter — a breakthrough during the fuel crisis.</p>
+          <div class="chips"><span class="chip">CVCC engine</span><span class="chip">FWD debut</span><span class="chip">Oil-crisis timing</span></div>
+        </div>
+      </div>
+
+      <div class="gen">
+        <div class="dot"></div>
+        <div class="gen-card">
+          <span class="gen-num">2nd Generation</span>
+          <h3>Growing Up</h3>
+          <div class="years">1979 – 1983</div>
+          <p>Released mid-1979 for the 1980 model year with a larger, more angular body. Engines grew to 1,335cc and an optional 1,488cc, both using refined CVCC "lean-burn" technology for better efficiency.</p>
+          <div class="chips"><span class="chip">Larger body</span><span class="chip">Lean-burn CVCC</span></div>
+        </div>
+      </div>
+
+      <div class="gen">
+        <div class="dot"></div>
+        <div class="gen-card">
+          <span class="gen-num">3rd Generation</span>
+          <h3>The Wagon &amp; the CRX</h3>
+          <div class="years">1983 – 1987</div>
+          <p>Introduced September 1983. This generation added the Civic Shuttle wagon and the lightweight CRX coupe. A new D-series 1.5L CVCC engine made 76 hp, alongside a high-performance 1.6L DOHC "ZC" engine rated at 130 hp.</p>
+          <div class="chips"><span class="chip">Civic Shuttle</span><span class="chip">CRX</span><span class="chip">DOHC ZC engine</span></div>
+        </div>
+      </div>
+
+      <div class="gen">
+        <div class="dot"></div>
+        <div class="gen-card">
+          <span class="gen-num">4th Generation</span>
+          <h3>VTEC Arrives</h3>
+          <div class="years">1987 – 1991</div>
+          <p>Released September 1987, larger and lower than before with fully independent rear suspension across the range. The sporty SiR trim introduced the B16A 1.6L DOHC VTEC engine — Honda's first mainstream use of variable valve timing.</p>
+          <div class="chips"><span class="chip">B16A VTEC</span><span class="chip">SiR trim</span><span class="chip">Independent rear suspension</span></div>
+        </div>
+      </div>
+
+      <div class="gen">
+        <div class="dot"></div>
+        <div class="gen-card">
+          <span class="gen-num">5th Generation</span>
+          <h3>Efficiency Peak</h3>
+          <div class="years">1991 – 1995</div>
+          <p>Introduced September 1991 with more aerodynamic styling. The VX hatchback rated an astonishing 48/55 mpg (city/highway), Honda's most fuel-efficient Civic at the time. Offered both SOHC VTEC and VTEC-E variants.</p>
+          <div class="chips"><span class="chip">VX hatchback</span><span class="chip">VTEC-E</span><span class="chip">Aero styling</span></div>
+        </div>
+      </div>
+
+      <div class="gen">
+        <div class="dot"></div>
+        <div class="gen-card">
+          <span class="gen-num">6th Generation</span>
+          <h3>Peak '90s Civic</h3>
+          <div class="years">1995 – 2000</div>
+          <p>Released September 1995. Added the natural-gas-powered Civic GX. Engine choices spanned SOHC D16Y7, SOHC VTEC D16Y8 (127 hp), and the DOHC VTEC B16A2 (160 hp) — a generation beloved by the tuner scene.</p>
+          <div class="chips"><span class="chip">Civic GX (CNG)</span><span class="chip">B16A2</span><span class="chip">Tuner-era icon</span></div>
+        </div>
+      </div>
+
+      <div class="gen">
+        <div class="dot"></div>
+        <div class="gen-card">
+          <span class="gen-num">7th Generation</span>
+          <h3>Hybrid &amp; Type R Go Global</h3>
+          <div class="years">2000 – 2005</div>
+          <p>Released September 2000 with a flatter rear floor for more interior space, moving Civic into the "compact car" class. Suspension switched from double-wishbone to MacPherson struts. Debuted the Civic Hybrid (1.3L) and a redesigned Type R with i-VTEC.</p>
+          <div class="chips"><span class="chip">Civic Hybrid debut</span><span class="chip">i-VTEC Type R</span><span class="chip">MacPherson struts</span></div>
+        </div>
+      </div>
+
+      <div class="gen">
+        <div class="dot"></div>
+        <div class="gen-card">
+          <span class="gen-num">8th Generation</span>
+          <h3>Split Platforms</h3>
+          <div class="years">2005 – 2011</div>
+          <p>Launched September 2005 in North America with dramatically futuristic, angular styling. Sedan/coupe and hatchback versions split onto separate platforms, with the hatchback borrowing simplified rear suspension from the Honda Fit.</p>
+          <div class="chips"><span class="chip">Futuristic dash</span><span class="chip">Dual platforms</span></div>
+        </div>
+      </div>
+
+      <div class="gen">
+        <div class="dot"></div>
+        <div class="gen-card">
+          <span class="gen-num">9th Generation</span>
+          <h3>Built Through a Crisis</h3>
+          <div class="years">2011 – 2015</div>
+          <p>Production began April 2011, developed in the shadow of the 2008 financial crisis with a sharp focus on affordability and fuel economy. A late-2012 refresh improved interior quality after early criticism. Never officially sold in Japan, aside from a limited 750-unit Type R run in 2015.</p>
+          <div class="chips"><span class="chip">2012 mid-cycle refresh</span><span class="chip">Cost-focused</span></div>
+        </div>
+      </div>
+
+      <div class="gen">
+        <div class="dot"></div>
+        <div class="gen-card">
+          <span class="gen-num">10th Generation</span>
+          <h3>One World Civic</h3>
+          <div class="years">2015 – 2021</div>
+          <p>Unveiled September 2015 on an all-new global compact platform, unifying markets worldwide for the first time. Sleek fastback styling, a return of the three-door hatchback, and the first Type R officially sold in North America (imported from the UK).</p>
+          <div class="chips"><span class="chip">Global platform</span><span class="chip">Type R comes to N.A.</span><span class="chip">Fastback design</span></div>
+        </div>
+      </div>
+
+      <div class="gen">
+        <div class="dot"></div>
+        <div class="gen-card">
+          <span class="gen-num">11th Generation</span>
+          <h3>Today's Civic</h3>
+          <div class="years">2021 – Present</div>
+          <p>Revealed as a prototype in November 2020, with the production version unveiled June 2021 and launched that fall. Built under Honda's "Man-Maximum, Machine-Minimum" philosophy: a longer wheelbase, rearward-shifted windshield pillars, and stiffer chassis. Offered as sedan and hatchback — the coupe was dropped due to falling demand. A refresh arrived for the 2025 model year (May 2024), and the range continues into the 2026 model year with sedan, hatchback, Si, hybrid, and Type R variants.</p>
+          <div class="chips"><span class="chip">e:HEV Hybrid</span><span class="chip">Si (200 hp turbo)</span><span class="chip">Type R (330 PS)</span><span class="chip">2025 MY refresh</span></div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="tech">
+    <h2 class="section-title">Signature Technology</h2>
+    <p class="section-desc">A few innovations defined the Civic's engineering reputation across its five decades.</p>
+    <div class="grid">
+      <div class="card">
+        <h4>CVCC</h4>
+        <p>Compound Vortex Controlled Combustion — introduced in 1973, it let the Civic meet strict U.S. emissions limits without a catalytic converter, years ahead of most competitors.</p>
+      </div>
+      <div class="card">
+        <h4>VTEC</h4>
+        <p>Variable valve timing and lift, introduced on the 4th-generation SiR. VTEC became Honda's performance calling card through the '90s and 2000s tuner era.</p>
+      </div>
+      <div class="card">
+        <h4>Civic Hybrid</h4>
+        <p>Launched on the 7th generation in 2001, it was one of the first mainstream hybrid sedans, later evolving into the current two-motor e:HEV system.</p>
+      </div>
+      <div class="card">
+        <h4>Type R</h4>
+        <p>Honda's hardcore performance halo trim, first appearing on the Civic in 1997 (Japan). Today's 6th-gen Type R produces 330 PS from a 2.0L turbocharged K20C1.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="awards">
+    <h2 class="section-title">Awards &amp; Milestones</h2>
+    <ul>
+      <li><strong>1972–1974</strong> — Car of the Year Japan</li>
+      <li><strong>1973</strong> — 3rd place, European Car of the Year</li>
+      <li><strong>1980</strong> — Motor Trend Import Car of the Year</li>
+      <li><strong>2005</strong> — World Car of the Year (Civic EX)</li>
+      <li><strong>2006</strong> — North American Car of the Year (8th generation)</li>
+      <li><strong>1999–2012</strong> — Canada's best-selling passenger car for 14 consecutive years</li>
+      <li><strong>27M+</strong> — Civics sold worldwide since 1972, making it one of the best-selling nameplates in automotive history</li>
+    </ul>
+  </section>
+
+</main>
+
+<footer>
+  Compiled from Honda historical records and public reference sources. For current pricing and specs, see your local Honda dealer.
+</footer>
+
+</body>
+</html>
